@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Notifier</title>
+  <script type="text/javascript" src="{% static 'js/jquery-1.9.1.min.js' %}"></script>
+  <link type="text/css" rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+  <style type="text/css">
+    html {
+      position: relative;
+      min-height: 100%;
+    }
+    body {
+      padding-top: 70px;
+    }
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+    .footer hr {
+      background-color: #cccccc;
+      color: #cccccc;
+    }
+    .form {
+      padding-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Notifier for XDU</a>
+    </div>
+    <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav">
+        <li {% block nav_index %} {% endblock %}><a href="{% url 'index' %}">Home</a></li>
+        <li {% block nav_about %} {% endblock %}><a href="#">About</a></li>
+        <li {% block nav_contact %} {% endblock %}><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
+
+<div class="footer">
+  <div class="hr"><hr></div>
+  <div class="container">
+    <p class="text-center"><a href="#"><span class="glyphicon glyphicon-arrow-up"></span>Back to top</a></p>
+    <p class="text-muted text-center">Copyright ©2014 All rights reserved.</p>
+  </div>
+</div>
+
+{% block script %}{% endblock %}
+</body>
+</html>

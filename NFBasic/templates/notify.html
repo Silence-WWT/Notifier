@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <form id="nf_form" class="form" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label class="control-label" for="id_title">{{ nf_form.title.label }}</label>
+      {{ nf_form.title }}
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="id_content">{{ nf_form.content.label }}</label>
+      {{ nf_form.content }}
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="id_grade">{{ nf_form.grade.label }}</label>
+      {{ nf_form.grade }}
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="id_file">{{ nf_form.file.label }}</label>
+      {{ nf_form.file }}
+      <span class="help-block">{{ nf_form.file.help_text }}</span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+{% endblock %}
