@@ -1,4 +1,4 @@
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
@@ -18,25 +18,31 @@ def detail(request):
 def notify(request):
     if request.method == 'POST':
         nf_form = NotificationForm(request.POST)
+        file_form = FileForm(request.POST, request.FILES)
         if nf_form.is_valid():
             if request.user.is_authenticated():
                 nf_data = nf_form.cleaned_data
                 title = nf_data['title']
                 content = nf_data['content']
-                files = nf_data['file']
                 grade = Grade.objects.filter(grade=nf_data['grade'])
                 if not grade:
                     grade = Grade.objects.create(grade=nf_data['grade'])
                 else:
                     grade = grade[0]
                 user = request.user
-                notification = Notification.objects.create(title=title, content=content, user=user, grade=grade,
-                                                           file=files)
+                notification = Notification.objects.create(title=title, content=content, user=user, grade=grade)
+                if file_form.is_valid():
+                    notification.file = request.FILES['file']
+                    notification.save()
+                return HttpResponse('notify successfully!')
             else:
                 return HttpResponse('user not exist!')
+        else:
+            return HttpResponse('not valid!')
     else:
         nf_form = NotificationForm()
-        return render_to_response('notify.html', {'nf_form': nf_form})
+        file_form = FileForm()
+        return render_to_response('notify.html', {'nf_form': nf_form, 'file_form': file_form})
 
 
 @csrf_exempt
@@ -49,12 +55,14 @@ def user_login(request):
             user = authenticate(username=username, password=password)
             if user:
                 login(request, user)
-                return HttpResponseRedirect('/Notifier/')
+                message = 'login successfully!'
+                return render_to_response('redirect.html', {'message': message})
             else:
-                error_message = 'wrong username or password!'
-                return HttpResponseRedirect('/Notifier/')
+                message = 'Incorrect username or password!'
+                return render_to_response('redirect.html', {'message': message})
         else:
-            return HttpResponse('alksdjf')
+            message = 'please input username and password!'
+            return render_to_response('redirect.html', {'message': message})
     else:
         login_form = LoginForm()
         return render_to_response('login.html', {'login_form': login_form})
@@ -62,4 +70,5 @@ def user_login(request):
 
 def user_logout(request):
     logout(request)
-    return render_to_response('index.html', {})
+    message = 'logout successfully'
+    return render_to_response('redirect.html', {'message': message})

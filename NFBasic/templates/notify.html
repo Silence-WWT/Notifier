@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-  <form id="nf_form" class="form" method="post">
+  <form id="nf_form" class="form" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="form-group">
       <label class="control-label" for="id_title">{{ nf_form.title.label }}</label>
@@ -17,9 +17,9 @@
       {{ nf_form.grade }}
     </div>
     <div class="form-group">
-      <label class="control-label" for="id_file">{{ nf_form.file.label }}</label>
-      {{ nf_form.file }}
-      <span class="help-block">{{ nf_form.file.help_text }}</span>
+      <label class="control-label" for="id_file">{{ file_form.file.label }}</label>
+      {{ file_form.file }}
+      <span class="help-block">{{ file_form.file.help_text }}</span>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
