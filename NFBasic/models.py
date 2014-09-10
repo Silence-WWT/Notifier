@@ -9,6 +9,10 @@ class Grade(models.Model):
         return self.grade
 
 
+class NotificationMonth(models.Model):
+    month = models.DateTimeField()
+
+
 class Notification(models.Model):
     title = models.CharField(max_length=50)
     content = models.TextField()
@@ -16,6 +20,7 @@ class Notification(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
     grade = models.ForeignKey(Grade)
+    month = models.ForeignKey(NotificationMonth)
     file = models.FileField(upload_to='files/%Y/%m/%d')
 
     def __unicode__(self):
