@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block nav_notification %}
+  class = 'active'
+{% endblock %}
+
+
+{% block content %}
+  <div class="col-md-9">
+    <h2 class="page-header">{{ notification.title }}</h2>
+    <p>{{ notification.created_time }}</p>
+    <p>{{ notification.grade }}</p>
+    <p>{{ notification.user }}</p>
+    <p>{{ notification.content }}</p>
+  </div>
+{% endblock %}
