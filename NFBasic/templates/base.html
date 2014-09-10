@@ -27,6 +27,37 @@
     .form {
       padding-bottom: 40px;
     }
+    .panel-default {
+      padding-top: 30px;
+      border-color: #ffffff;
+    }
+    .panel-default > .panel-heading {
+      background-color: #ffffff;
+      border-bottom-color: #aaaaaa;
+    }
+    .panel-default > .panel-heading > h3 {
+      padding-top: 0;
+      line-height: 0;
+      color: #428bca;
+    }
+    .list-group > p, .list-group > a {
+      border-color: #ffffff;
+    }
+    .page-header {
+      margin-top: 30px;
+      margin-bottom: 10px;
+      padding-top: 10px;
+      color: #428bca;
+      border-bottom-color: #aaaaaa;
+    }
+    .btn-default {
+      border-color: #428bca;
+      color: #428bca;
+    }
+    .modal-footer > .btn-default {
+      color: #333333;
+      border-color: #cccccc;
+    }
   </style>
 </head>
 <body>
@@ -44,6 +75,7 @@
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
         <li {% block nav_index %} {% endblock %}><a href="{% url 'index' %}">Home</a></li>
+        <li {% block nav_notification %} {% endblock %}><a href="{% url 'view' %}">Notification</a></li>
         <li {% block nav_about %} {% endblock %}><a href="#">About</a></li>
         <li {% block nav_contact %} {% endblock %}><a href="#">Contact Us</a></li>
       </ul>
@@ -53,7 +85,7 @@
 
 <div class="container">
   {% block content %}{% endblock %}
-</div>
+</div><br><br><br><br>
 
 <div class="footer">
   <div class="hr"><hr></div>
