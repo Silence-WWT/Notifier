@@ -25,7 +25,7 @@ def detail(request, pid):
         last_notification = nf_list[nf_index + 1]
     else:
         last_notification = None
-    context = {'request': request, 'notification': notification, 'next': next_notification, 'last': last_notification,
+    context = {'user': request.user.username, 'notification': notification, 'next': next_notification, 'last': last_notification,
                'archive_dict_list': get_archive_dict_list(), 'grade_dict_list': get_grade_dict_list()}
     return render_to_response('detail.html', context)
 
@@ -92,40 +92,76 @@ def pageinate(request, nf_list, page, archive_month=None, grade=None):
 
 @csrf_exempt
 def notify(request):
+    if not request.user.is_authenticated():
+        message = 'Permission Denied! Please login'
+        return render_to_response('redirect.html', {'message': message})
     if request.method == 'POST':
         nf_form = NotificationForm(request.POST)
         file_form = FileForm(request.POST, request.FILES)
         if nf_form.is_valid():
-            if request.user.is_authenticated():
-                nf_data = nf_form.cleaned_data
-                title = nf_data['title']
-                content = nf_data['content']
-                grade = Grade.objects.filter(grade=nf_data['grade'])
-                if not grade:
-                    grade = Grade.objects.create(grade=nf_data['grade'])
-                else:
-                    grade = grade[0]
-                created_time = datetime.now()
-                created_time = datetime(created_time.year, created_time.month, 1)
-                nf_month = NotificationMonth.objects.filter(month__exact=created_time)
-                if not nf_month:
-                    month = NotificationMonth.objects.create(month=created_time)
-                else:
-                    month = nf_month[0]
-                user = request.user
-                notification = Notification.objects.create(title=title, content=content, user=user, grade=grade,
-                                                           month=month)
-                if file_form.is_valid():
-                    notification.file = request.FILES['file']
-                    notification.save()
-                return HttpResponse('notify successfully!')
+            nf_data = nf_form.cleaned_data
+            title = nf_data['title']
+            content = nf_data['content']
+            grade = Grade.objects.filter(grade=nf_data['grade'])
+            if not grade:
+                grade = Grade.objects.create(grade=nf_data['grade'])
             else:
-                return HttpResponse('user not exist!')
+                grade = grade[0]
+            created_time = datetime.now()
+            created_time = datetime(created_time.year, created_time.month, 1)
+            nf_month = NotificationMonth.objects.filter(month__exact=created_time)
+            if not nf_month:
+                month = NotificationMonth.objects.create(month=created_time)
+            else:
+                month = nf_month[0]
+            user = request.user
+            notification = Notification.objects.create(title=title, content=content, user=user, grade=grade,
+                                                       month=month)
+            if file_form.is_valid():
+                notification.file = request.FILES['file']
+                notification.save()
+            return HttpResponseRedirect('/Notifier/detail/%s/' % notification.pk)
         else:
             return HttpResponse('not valid!')
     else:
         nf_form = NotificationForm()
         file_form = FileForm()
+        return render_to_response('notify.html', {'nf_form': nf_form, 'file_form': file_form})
+
+
+def edit(request, pid):
+    if not request.user.is_authenticated():
+        message = 'Permission Denied! Please login'
+        return render_to_response('redirect.html', {'message': message})
+    notification = get_object_or_404(Notification, pk=pid)
+    if request.method == 'POST':
+        nf_form = NotificationForm(request.POST)
+        file_form = FileForm(request.POST, request.FILES)
+        if nf_form.is_valid():
+            nf_data = nf_form.cleaned_data
+            title = nf_data['title']
+            content = nf_data['content']
+            grade = Grade.objects.filter(grade=nf_data['grade'])
+            if not grade:
+                grade = Grade.objects.create(grade=nf_data['grade'])
+            else:
+                grade = grade[0]
+            if notification.title != title:
+                notification.title = title
+            if notification.content != content:
+                notification.content = content
+            if notification.grade != grade:
+                notification.grade = grade
+            if file_form.is_valid() and notification.file != request.FILES['file']:
+                notification.file = request.FILES['file']
+            notification.save()
+            return HttpResponseRedirect('/Notifier/detail/%s/' % notification.pk)
+        else:
+            return HttpResponse('not valid!')
+    else:
+        init_dict = {'title': notification.title, 'grade': notification.grade, 'content': notification.content}
+        nf_form = NotificationForm(initial=init_dict)
+        file_form = FileForm(initial={'file': notification.file.url})
         return render_to_response('notify.html', {'nf_form': nf_form, 'file_form': file_form})
 
 

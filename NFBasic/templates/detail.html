@@ -28,14 +28,14 @@
       <a href="{{ notification.file.url }}">{{ notification.file.name }}</a>
     {% endif %}
     <div class="row"><br><br></div>
-
+    
     <div class="row">
       <div class="pull-right">
         <div class="btn-group">
           <a href="{% url 'view' %}" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
-{#          {% if request.user %}#}
-{#            <a href="{% url 'edit' blog.pk %}" class="btn btn-primary" role="button">{% bootstrap_icon "edit" %} Edit</a>#}
-{#          {% endif %}#}
+          {% if user %}
+            <a href="{% url 'edit' notification.pk %}" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+          {% endif %}
         </div>
       </div>
     </div><br><br>

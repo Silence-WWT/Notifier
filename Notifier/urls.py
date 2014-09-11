@@ -21,5 +21,6 @@ urlpatterns = patterns('',
     url(r'^grade/(\w+?)/(?:(\d+)/)?$', views.get_grade, name='grade'),
     url(r'^detail/(\d+)/$', views.detail, name='detail'),
     url(r'^notify/$', views.notify, name='notify'),
+    url(r'^edit/(\d+)/$', views.edit, name='edit'),
 
 )
