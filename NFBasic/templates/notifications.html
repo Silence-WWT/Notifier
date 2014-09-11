@@ -1,2 +1,90 @@
 {% extends 'base_notifications.html' %}
 
+{% block nf_list %}
+
+  {% if request.user and not archive_month and not grade %}
+    <div class="row">
+        <div class="pull-right" style="padding-top: 43px;">
+          <a href="{% url 'notify' %}" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-plus"></span> New notification</a>
+        </div>
+    </div>
+  {% endif %}
+
+  {% for notification in nf_list %}
+    <div class="row">
+      <div>
+        <h2 class="page-header">
+          <a href="{% url 'detail' notification.pk%}">
+            {{ notification.title }}
+          </a>
+        </h2>
+
+        <div class="row" style="padding-top: 5px;padding-bottom: 10px">
+          <div class="col-md-9">
+            <div class="text-left">
+              <a href="{% url 'grade' notification.grade %}" class="btn btn-sm btn-default">{{ notification.grade }}</a>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="text-right">
+              <p class="text-muted"> {{ notification.created_time|date:"M. j, Y, H:i:s" }} </p>
+            </div>
+          </div>
+        </div>
+
+        {{ notification.content|safe|truncatewords_html:150 }}
+      </div><br><br>
+
+    </div>
+  {% endfor %}
+
+{% endblock %}
+
+{% block pagination %}
+
+  {% if pages > 1 %}
+    <div class="row">
+      <ul class="pagination pagination-lg pull-left">
+        {% if page != 1 %}
+          {% if grade %}
+            <li><a href="{% url 'grade' grade last_page %}">&laquo;</a></li>
+          {% elif archive_month %}
+            <li><a href="{% url 'archive' archive_month last_page %}">&laquo;</a></li>
+          {% else %}
+            <li><a href="{% url 'view' last_page %}">&laquo;</a></li>
+          {% endif %}
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+
+        {% for i in range %}
+          {% if i == page %}
+            <li class="active"><span>{{ i }}<span class="sr-only">(current)</span></span></li>
+          {% else %}
+            {% if grade %}
+              <li><a href="{% url 'grade' grade i %}">{{ i }}</a></li>
+            {% elif archive_month %}
+              <li><a href="{% url 'archive' archive_month i %}">{{ i }}</a></li>
+            {% else %}
+              <li><a href="{% url 'view' i %}">{{ i }}</a></li>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {% if page != pages %}
+          {% if grade %}
+            <li><a href="{% url 'grade' grade next_page %}">&raquo;</a></li>
+          {% elif archive_month %}
+            <li><a href="{% url 'archive' archive_month next_page %}">&raquo;</a></li>
+          {% else %}
+            <li><a href="{% url 'view' last_page %}">&raquo;</a></li>
+          {% endif %}
+        {% else %}
+          <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+      </ul>
+    </div>
+  {% endif %}
+
+{% endblock %}

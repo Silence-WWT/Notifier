@@ -1,17 +1,56 @@
-{% extends 'base.html' %}
+{% extends 'base_notifications.html' %}
 {% load static %}
 
-{% block nav_notification %}
-  class = 'active'
-{% endblock %}
-
-
-{% block content %}
-  <div class="col-md-9">
+{% block nf_list %}
+  <div>
     <h2 class="page-header">{{ notification.title }}</h2>
-    <p>{{ notification.created_time }}</p>
-    <p>{{ notification.grade }}</p>
-    <p>{{ notification.user }}</p>
-    <p>{{ notification.content }}</p>
+
+    <div class="row" style="padding-top: 5px;">
+      <!-- categories -->
+      <div class="col-md-9">
+        <div class="text-left">
+          <a href="{% url 'grade' notification.grade %}" class="btn btn-sm btn-default">{{ notification.grade }}</a>
+        </div>
+      </div>
+      <!-- created time -->
+      <div class="col-md-3">
+        <div class="text-right">
+          <p class="text-muted"> {{ notification.created_time|date:"M. j, Y, H:i:s" }} </p>
+        </div>
+      </div>
+    </div>
+
+    {{ notification.content|safe }}
+
+    <br>
+
+    {% if notification.file %}
+      <a href="{{ notification.file.url }}">{{ notification.file.name }}</a>
+    {% endif %}
+    <div class="row"><br><br></div>
+
+    <div class="row">
+      <div class="pull-right">
+        <div class="btn-group">
+          <a href="{% url 'view' %}" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-chevron-left"></span> Back</a>
+{#          {% if request.user %}#}
+{#            <a href="{% url 'edit' blog.pk %}" class="btn btn-primary" role="button">{% bootstrap_icon "edit" %} Edit</a>#}
+{#          {% endif %}#}
+        </div>
+      </div>
+    </div><br><br>
+
+    <div class="row">
+      {% if last %}
+        <a class="pull-left" href="{% url 'detail' last.pk %}"><span class="glyphicon glyphicon-chevron-left"></span> {{ last.title }}</a>
+      {% else %}
+        <p class="text-muted pull-left"><span class="glyphicon glyphicon-chevron-left"></span> 已是第一篇</p>
+      {% endif %}
+      {% if next %}
+        <a class="pull-right" href="{% url "detail" next.pk %}">{{ next.title }} <span class="glyphicon glyphicon-chevron-right"></span></a>
+      {% else %}
+        <p class="text-muted pull-right">已是最后一篇 <span class="glyphicon glyphicon-chevron-right"></span></p>
+      {% endif %}
+    </div>
   </div>
 {% endblock %}

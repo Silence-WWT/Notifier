@@ -24,8 +24,8 @@
     {% endif %}
   </div>
   <div class="col-md-3">
-    {% if request.user == 'AnonymousUser' %}
-      <p>User: {{ request.user }}</p>
+    {% if user %}
+      <p>User: {{ user }}</p>
       <a href="{% url 'user_logout' %}">logout</a>
     {% else %}
       <a href="{% url 'user_login' %}">login</a>

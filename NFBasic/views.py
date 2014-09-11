@@ -10,12 +10,24 @@ from datetime import datetime
 
 def index(request):
     recent_list = Notification.objects.all().order_by('modified_time').reverse()[:10]
-    return render_to_response('index.html', {'request': request, 'recent_list': recent_list})
+    return render_to_response('index.html', {'user': request.user.username, 'recent_list': recent_list})
 
 
 def detail(request, pid):
     notification = get_object_or_404(Notification, pk=pid)
-    return render_to_response('detail.html', {'request': request, 'notification': notification})
+    nf_list = list(Notification.objects.order_by('created_time').reverse())
+    nf_index = nf_list.index(notification)
+    if nf_index > 0:
+        next_notification = nf_list[nf_index - 1]
+    else:
+        next_notification = None
+    if nf_index < len(nf_list) - 1:
+        last_notification = nf_list[nf_index + 1]
+    else:
+        last_notification = None
+    context = {'request': request, 'notification': notification, 'next': next_notification, 'last': last_notification,
+               'archive_dict_list': get_archive_dict_list(), 'grade_dict_list': get_grade_dict_list()}
+    return render_to_response('detail.html', context)
 
 
 def view(request, page=''):
@@ -128,7 +140,7 @@ def user_login(request):
             if user:
                 login(request, user)
                 message = 'login successfully!'
-                return render_to_response('redirect.html', {'message': message})
+                return render_to_response('redirect.html', {'message': message, 'request': request})
             else:
                 message = 'Incorrect username or password!'
                 return render_to_response('redirect.html', {'message': message})
