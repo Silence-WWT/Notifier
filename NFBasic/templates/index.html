@@ -15,28 +15,38 @@
     </div>
   {% endif %}
   <h2>Recent Notification</h2>
-  {% for nofication in recent_list %}
-    <div>
-      <h3 class="page-header">
-        <a href="{% url 'detail' nofication.pk %}">{{ nofication.title }}</a>
-      </h3>
-      <p>Time: {{ nofication.created_time|date:"M. j, Y, H:i:s" }}</p>
-      <p>Grade: {{ nofication.grade }}</p>
-      <p>Sender: {{ request.user }}</p>
-      <p>{{ nofication.content }}</p>
+  {% for notification in recent_list %}
+    <div class="row">
+      <div>
+        <h2 class="page-header">
+          <a href="{% url 'detail' notification.pk %}">
+            {{ notification.title }}
+          </a>
+        </h2>
+
+        <div class="row" style="padding-top: 5px;padding-bottom: 10px">
+          <div class="col-md-9">
+            <div class="text-left">
+              <div class="btn-group">
+                <a href="{% url 'grade' notification.grade %}" class="btn btn-sm btn-default">{{ notification.grade }}</a>
+                <a class="btn btn-sm btn-default">{{ notification.user }}</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="text-right">
+              <p class="text-muted"> {{ notification.created_time|date:"M. j, Y, H:i:s" }} </p>
+            </div>
+          </div>
+        </div>
+
+        {{ notification.content|safe|truncatewords_html:150 }}
+      </div><br><br>
     </div>
   {% endfor %}
   {% if not recent_list %}
     <h3 class="text-muted">No recent notifications</h3>
   {% endif %}
 
-{% endblock %}
-
-{% block user %}
-  {% if user %}
-    <p>User: {{ user }}</p>
-      <a href="{% url 'user_logout' %}">logout</a>
-    {% else %}
-      <a href="{% url 'user_login' %}">login</a>
-    {% endif %}
 {% endblock %}

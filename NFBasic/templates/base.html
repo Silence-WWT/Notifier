@@ -79,6 +79,16 @@
         <li {% block nav_about %} {% endblock %}><a href="#">About</a></li>
         <li {% block nav_contact %} {% endblock %}><a href="#">Contact Us</a></li>
       </ul>
+      <div class="navbar-right">
+        <div class="navbar-text">
+          {% if user %}
+            <a href="#">{{ user }}</a>&nbsp;&nbsp;
+            <a href="{% url 'user_logout' %}"><span class="glyphicon glyphicon-log-out"></span></a>
+          {% else %}
+            <a href="{% url 'user_login' %}"><span class="glyphicon glyphicon-log-in"></span></a>
+          {% endif %}
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -93,8 +103,6 @@
       </div>
 
       <div class="col-md-3 col-md-offset-1">
-        {% block user %}{% endblock %}
-
         {% if archive_dict_list %}
           <div class="row">
             <div class="panel panel-default">

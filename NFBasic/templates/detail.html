@@ -6,13 +6,11 @@
     <h2 class="page-header">{{ notification.title }}</h2>
 
     <div class="row" style="padding-top: 5px;">
-      <!-- categories -->
       <div class="col-md-9">
         <div class="text-left">
           <a href="{% url 'grade' notification.grade %}" class="btn btn-sm btn-default">{{ notification.grade }}</a>
         </div>
       </div>
-      <!-- created time -->
       <div class="col-md-3">
         <div class="text-right">
           <p class="text-muted"> {{ notification.created_time|date:"M. j, Y, H:i:s" }} </p>

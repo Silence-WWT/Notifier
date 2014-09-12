@@ -14,7 +14,7 @@
     <div class="row">
       <div>
         <h2 class="page-header">
-          <a href="{% url 'detail' notification.pk%}">
+          <a href="{% url 'detail' notification.pk %}">
             {{ notification.title }}
           </a>
         </h2>
@@ -35,7 +35,6 @@
 
         {{ notification.content|safe|truncatewords_html:150 }}
       </div><br><br>
-
     </div>
   {% endfor %}
 
