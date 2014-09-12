@@ -84,7 +84,57 @@
 </div>
 
 <div class="container">
-  {% block content %}{% endblock %}
+  {% block content %}
+    <div class="row">
+      <div class="col-md-8">
+        {% block recent_nf %}{% endblock %}
+        {% block nf_list %}{% endblock %}
+        {% block pagination %}{% endblock %}
+      </div>
+
+      <div class="col-md-3 col-md-offset-1">
+        {% block user %}{% endblock %}
+
+        {% if archive_dict_list %}
+          <div class="row">
+            <div class="panel panel-default">
+              <div class="panel-heading"><h3>Archives</h3></div>
+              <div class="list-group">
+                {% for item in archive_dict_list %}
+                  {% if archive_month == item.month %}
+                    <p class="list-group-item active">{{ item.month }}<span class="badge">{{ item.num }}</span></p>
+                  {% else %}
+                    <a href="{% url 'archive' item.month %}" class="list-group-item">{{ item.month }}
+                      <span class="badge">{{ item.num }}</span>
+                    </a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if grade_dict_list %}
+          <div class="row">
+            <div class="panel panel-default">
+              <div class="panel-heading"><h3>Grade</h3></div>
+              <div class="list-group">
+                {% for item in grade_dict_list %}
+                  {% if item.grade == grade.grade %}
+                    <p class="list-group-item active">{{ item.grade }}<span class="badge">{{ item.num }}</span> </p>
+                  {% else %}
+                    <a href="{% url 'grade' item.grade %}" class="list-group-item">{{ item.grade }}
+                      <span class="badge">{{ item.num }}</span>
+                    </a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endblock %}
 </div><br><br><br><br>
 
 <div class="footer">

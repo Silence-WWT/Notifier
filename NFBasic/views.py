@@ -10,7 +10,9 @@ from datetime import datetime
 
 def index(request):
     recent_list = Notification.objects.all().order_by('modified_time').reverse()[:10]
-    return render_to_response('index.html', {'user': request.user.username, 'recent_list': recent_list})
+    context = {'user': request.user.username, 'recent_list': recent_list, 'archive_dict_list': get_archive_dict_list(),
+               'grade_dict_list': get_grade_dict_list()}
+    return render_to_response('index.html', context)
 
 
 def detail(request, pid):
@@ -25,8 +27,9 @@ def detail(request, pid):
         last_notification = nf_list[nf_index + 1]
     else:
         last_notification = None
-    context = {'user': request.user.username, 'notification': notification, 'next': next_notification, 'last': last_notification,
-               'archive_dict_list': get_archive_dict_list(), 'grade_dict_list': get_grade_dict_list()}
+    context = {'user': request.user.username, 'notification': notification, 'next': next_notification,
+               'last': last_notification, 'archive_dict_list': get_archive_dict_list(),
+               'grade_dict_list': get_grade_dict_list()}
     return render_to_response('detail.html', context)
 
 
@@ -78,7 +81,7 @@ def pageinate(request, nf_list, page, archive_month=None, grade=None):
     pages = int((len(nf_list) + 10 - 1) / 10)
     if page > pages or page < 1:
         return HttpResponseRedirect('/views/')
-    context = {'nf_list': nf_list, 'pages': pages,
+    context = {'nf_list': nf_list, 'pages': pages, 'user': request.user.username,
                'archive_dict_list': get_archive_dict_list(), 'archive_month': archive_month,
                'grade_dict_list': get_grade_dict_list(), 'grade': grade}
     if pages > 1:
@@ -162,7 +165,8 @@ def edit(request, pid):
         init_dict = {'title': notification.title, 'grade': notification.grade, 'content': notification.content}
         nf_form = NotificationForm(initial=init_dict)
         file_form = FileForm(initial={'file': notification.file.url})
-        return render_to_response('notify.html', {'nf_form': nf_form, 'file_form': file_form})
+        return render_to_response('notify.html', {'nf_form': nf_form, 'file_form': file_form,
+                                                  'notification': notification})
 
 
 @csrf_exempt

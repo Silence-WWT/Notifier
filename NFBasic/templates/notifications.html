@@ -2,7 +2,7 @@
 
 {% block nf_list %}
 
-  {% if request.user and not archive_month and not grade %}
+  {% if user and not archive_month and not grade %}
     <div class="row">
         <div class="pull-right" style="padding-top: 43px;">
           <a href="{% url 'notify' %}" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-plus"></span> New notification</a>
