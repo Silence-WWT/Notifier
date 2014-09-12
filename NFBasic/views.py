@@ -129,9 +129,11 @@ def notify(request):
     else:
         nf_form = NotificationForm()
         file_form = FileForm()
-        return render_to_response('notify.html', {'nf_form': nf_form, 'file_form': file_form})
+        context = {'nf_form': nf_form, 'file_form': file_form, 'user': request.user.username}
+        return render_to_response('notify.html', context)
 
 
+@csrf_exempt
 def edit(request, pid):
     if not request.user.is_authenticated():
         message = 'Permission Denied! Please login'
@@ -140,6 +142,9 @@ def edit(request, pid):
     if request.method == 'POST':
         nf_form = NotificationForm(request.POST)
         file_form = FileForm(request.POST, request.FILES)
+        if nf_form['delete']:
+            notification.delete()
+            return HttpResponseRedirect('/Notifier/view/')
         if nf_form.is_valid():
             nf_data = nf_form.cleaned_data
             title = nf_data['title']
@@ -164,9 +169,10 @@ def edit(request, pid):
     else:
         init_dict = {'title': notification.title, 'grade': notification.grade, 'content': notification.content}
         nf_form = NotificationForm(initial=init_dict)
-        file_form = FileForm(initial={'file': notification.file.url})
-        return render_to_response('notify.html', {'nf_form': nf_form, 'file_form': file_form,
-                                                  'notification': notification})
+        file_form = FileForm()
+        context = {'nf_form': nf_form, 'file_form': file_form, 'edit': True, 'notification': notification,
+                   'user': request.user.username}
+        return render_to_response('notify.html', context)
 
 
 @csrf_exempt

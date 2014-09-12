@@ -21,6 +21,29 @@
       {{ file_form.file }}
       <span class="help-block">{{ file_form.file.help_text }}</span>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="form-group">
+      {{ nf_form.delete }}
+    </div>
+    <div class="btn-group">
+      {% if notification %}
+        <a class="btn btn-primary" href="{% url 'detail' notification.pk %}"><span class="glyphicon glyphicon-remove"></span> Cancel</a>
+      {% else %}
+        <a class="btn btn-primary" href="{% url 'view' %}"><span class="glyphicon glyphicon-remove"></span> Cancel</a>
+      {% endif %}
+      <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-ok"></span> Submit</button>
+      {% if edit %}
+        <button type="button" class="btn btn-primary" onclick="nf_delete();"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+      {% endif %}
+    </div>
   </form>
+{% endblock %}
+
+{% block script %}
+  <script type="text/javascript">
+    function nf_delete(){
+        var form = document.getElementById('nf_form');
+        form.delete.value = true;
+        form.submit();
+      }
+  </script>
 {% endblock %}

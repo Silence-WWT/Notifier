@@ -6,6 +6,7 @@ class NotificationForm(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), max_length=50, label='Title')
     content = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '8'}), label='Content')
     grade = forms.ChoiceField(choices=choices, widget=forms.Select(attrs={'class': 'form-control'}), label='Grade')
+    delete = forms.BooleanField(required=False, initial=False, widget=forms.HiddenInput())
 
 
 class FileForm(forms.Form):
