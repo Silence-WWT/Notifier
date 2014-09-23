@@ -85,7 +85,7 @@
             <a href="#">{{ user }}</a>&nbsp;&nbsp;
             <a href="{% url 'user_logout' %}"><span class="glyphicon glyphicon-log-out"></span></a>
           {% else %}
-            <a href="{% url 'user_login' %}"><span class="glyphicon glyphicon-log-in"></span></a>
+            <a href="{% url 'user_login' %}">login&nbsp;<span class="glyphicon glyphicon-log-in"></span></a>
           {% endif %}
         </div>
       </div>
