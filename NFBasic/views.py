@@ -6,6 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from NFBasic.forms import *
 from NFBasic.models import *
 from datetime import datetime
+from PIL import Image
+import re
 
 
 def index(request):
@@ -123,6 +125,7 @@ def notify(request):
             if file_form.is_valid():
                 notification.file = request.FILES['file']
                 notification.save()
+                resize_image(notification.file.path)
             return HttpResponseRedirect('/Notifier/detail/%s/' % notification.pk)
         else:
             return HttpResponse('not valid!')
@@ -131,6 +134,36 @@ def notify(request):
         file_form = FileForm()
         context = {'nf_form': nf_form, 'file_form': file_form, 'user': request.user.username}
         return render_to_response('notify.html', context)
+
+
+def get_resize_image(image_path, width_limit, height_limit, sub_name):
+    image = Image.open(image_path)
+    width = image.size[0]
+    height = image.size[1]
+    if width > width_limit:
+        new_width = width_limit
+        new_height = new_width * (float(height) / float(width))
+    else:
+        new_width = width
+        new_height = height
+    if new_height > height_limit:
+        new_height = height_limit
+        new_width = new_height * (float(width) / float(height))
+    extension = re.search(r'(.\w+)$', image_path).group(1)
+    image.thumbnail((new_width, new_height), Image.ANTIALIAS)
+    image.save(image_path.replace(extension, sub_name + extension))
+    return image
+
+
+def resize_image(image_path):
+    VIEW_THUMB_WIDTH_LIMIT = 640
+    VIEW_THUMB_HEIGHT_LIMIT = 500
+    ADMIN_THUMB_WIDTH_LIMIT = 50
+    ADMIN_THUMB_HEIGHT_LIMIT = 50
+    VIEW_THUMB_NAME = '.view_thumb'
+    ADMIN_THUMB_NAME = '.admin_thumb'
+    get_resize_image(image_path, VIEW_THUMB_WIDTH_LIMIT, VIEW_THUMB_HEIGHT_LIMIT, VIEW_THUMB_NAME)
+    get_resize_image(image_path, ADMIN_THUMB_WIDTH_LIMIT, ADMIN_THUMB_HEIGHT_LIMIT, ADMIN_THUMB_NAME)
 
 
 @csrf_exempt
