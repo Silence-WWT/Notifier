@@ -3,10 +3,13 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files import File
 from NFBasic.forms import *
 from NFBasic.models import *
 from datetime import datetime
 from PIL import Image
+import imghdr
+import hashlib
 import re
 
 
@@ -123,9 +126,41 @@ def notify(request):
             notification = Notification.objects.create(title=title, content=content, user=user, grade=grade,
                                                        month=month)
             if file_form.is_valid():
-                notification.file = request.FILES['file']
-                notification.save()
-                resize_image(notification.file.path)
+                upload_file = NotificationFile.objects.create(file=request.FILES['file'])
+                length = len(upload_file.file)
+                md5 = hashlib.md5()
+                with open(upload_file.file.path, mode='rb') as rb_file:
+                    md5.update(rb_file.read())
+                    md5_digest = md5.hexdigest()
+                same_file = False
+                for item in NotificationFile.objects.all():
+                    if str(length) == item.length and md5_digest == item.md5:
+                        same_file = True
+                        upload_file.file.delete(save=False)
+                        upload_file.delete()
+                        upload_file = item
+                        break
+                if same_file:
+                    if upload_file.image:
+                        notification.images.add(upload_file.image)
+                    else:
+                        notification.files.add(upload_file)
+                    notification.save()
+                else:
+                    upload_file.length = length
+                    upload_file.md5 = md5_digest
+                    image_type = imghdr.what(upload_file.file.path)
+                    upload_file.save()
+                    if image_type:
+                        upload_image = NotificationImage.objects.create(image=upload_file.file,
+                                                                        length=upload_file.length, md5=upload_file.md5)
+                        upload_file.image = upload_image
+                        upload_file.save()
+                        resize_image(upload_image, upload_image.image.path)
+                        notification.images.add(upload_image)
+                    else:
+                        notification.files.add(upload_file)
+                    notification.save()
             return HttpResponseRedirect('/Notifier/detail/%s/' % notification.pk)
         else:
             return HttpResponse('not valid!')
@@ -151,19 +186,25 @@ def get_resize_image(image_path, width_limit, height_limit, sub_name):
         new_width = new_height * (float(width) / float(height))
     extension = re.search(r'(.\w+)$', image_path).group(1)
     image.thumbnail((new_width, new_height), Image.ANTIALIAS)
-    image.save(image_path.replace(extension, sub_name + extension))
-    return image
+    image_path = image_path.replace(extension, sub_name + extension)
+    image.save(image_path)
+    return image, image_path
 
 
-def resize_image(image_path):
+def resize_image(image, image_path):
     VIEW_THUMB_WIDTH_LIMIT = 640
     VIEW_THUMB_HEIGHT_LIMIT = 500
     ADMIN_THUMB_WIDTH_LIMIT = 50
     ADMIN_THUMB_HEIGHT_LIMIT = 50
     VIEW_THUMB_NAME = '.view_thumb'
     ADMIN_THUMB_NAME = '.admin_thumb'
-    get_resize_image(image_path, VIEW_THUMB_WIDTH_LIMIT, VIEW_THUMB_HEIGHT_LIMIT, VIEW_THUMB_NAME)
-    get_resize_image(image_path, ADMIN_THUMB_WIDTH_LIMIT, ADMIN_THUMB_HEIGHT_LIMIT, ADMIN_THUMB_NAME)
+    image_file, path = get_resize_image(image_path, VIEW_THUMB_WIDTH_LIMIT, VIEW_THUMB_HEIGHT_LIMIT, VIEW_THUMB_NAME)
+    with open(path, 'r') as f:
+        image.view_thumb = File(f)
+    image_file, path = get_resize_image(image_path, ADMIN_THUMB_WIDTH_LIMIT, ADMIN_THUMB_HEIGHT_LIMIT, ADMIN_THUMB_NAME)
+    with open(path, 'r') as f:
+        image.admin_thumb = File(f)
+    image.save()
 
 
 @csrf_exempt

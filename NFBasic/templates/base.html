@@ -108,7 +108,7 @@
             <div class="panel panel-default">
               <div class="panel-heading"><h3>Archives</h3></div>
               <div class="list-group">
-                {% for item in archive_dict_list %}
+                {% for item in archive_dict_list|dictsortreversed:"month" %}
                   {% if archive_month == item.month %}
                     <p class="list-group-item active">{{ item.month }}<span class="badge">{{ item.num }}</span></p>
                   {% else %}
@@ -127,7 +127,7 @@
             <div class="panel panel-default">
               <div class="panel-heading"><h3>Grade</h3></div>
               <div class="list-group">
-                {% for item in grade_dict_list %}
+                {% for item in grade_dict_list|dictsortreversed:"grade" %}
                   {% if item.grade == grade.grade %}
                     <p class="list-group-item active">{{ item.grade }}<span class="badge">{{ item.num }}</span> </p>
                   {% else %}
